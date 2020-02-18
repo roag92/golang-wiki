@@ -18,11 +18,10 @@ docker build -t roag92/golang-wiki:dockerfile ./
 # Run
 
 ```bash
-docker run --rm -it -p 8080:8080 -v ./tmp:/golang-wiki/tmp roag92/golang-wiki:dockerfile
+docker run --rm -it -p 8080:8080 -v YOUR_LOCAL_PATH/tmp:/golang-wiki/tmp roag92/golang-wiki:dockerfile
 ```
 
 # Resources
 
  - https://code.visualstudio.com/docs/remote/containers
  - https://golang.org/doc/articles/wiki/
- 
