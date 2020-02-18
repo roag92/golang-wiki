@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<head>
+    <title>Welcome to GoLang - Wiki</title>
+</head>
+<body>
+    <h1>Welcome to GoLang - Wiki</h1>
+
+    <ul>
+        {{range $key, $value := .}}
+            <li>[<a href="view/{{ $value }}">{{ $value }}</a>]</li>
+        {{end}}
+    </ul>
+</body>
+</html>

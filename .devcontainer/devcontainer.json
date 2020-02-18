@@ -1,0 +1,13 @@
+{
+	"name": "Go",
+	"dockerFile": "Dockerfile",
+	"extensions": [
+		"ms-vscode.go"
+	],
+	"appPort": [
+        "8080:8080"
+	],
+	"settings": {
+		"go.useLanguageServer": true
+	},
+}
