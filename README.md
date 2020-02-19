@@ -8,17 +8,26 @@ A PoC using Docker to build and develop an application from a container. This ap
 # Requirements
 
  - Docker
+ - docker-compose
 
 # Build
 
 ```bash
-docker build -t roag92/golang-wiki:dockerfile ./
+docker-compose build
 ```
+
+# Setting
+
+Copy the `docker-compose.override.yml.dist` file to `docker-compose.override.yml`.
+
+ ```bash
+cp docker-compose.override.yml.dist docker-compose.override.yml
+ ```
 
 # Run
 
 ```bash
-docker run --rm -it -p 8080:8080 -v YOUR_LOCAL_PATH/tmp:/golang-wiki/tmp roag92/golang-wiki:dockerfile
+docker-compose up -d
 ```
 
 # How it works?
