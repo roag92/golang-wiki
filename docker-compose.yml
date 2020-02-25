@@ -4,4 +4,4 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: roag92/golang-wiki:compose
+    image: 'roag92/golang-wiki:compose'
