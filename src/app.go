@@ -8,13 +8,21 @@ import (
 	"wiki/src/controller"
 	"wiki/src/middleware"
 	"wiki/src/utils"
+
+	"github.com/joho/godotenv"
 )
 
 // Run HTTP server on 8080 port
 func Run() {
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	httpPort := 8080
 
-	files, err := utils.Search("/src/views/", ".html", false, true)
+	files, err := utils.Search("/templates/", ".html", false, true)
 
 	if err != nil {
 		log.Fatal(err)
