@@ -63,5 +63,14 @@ func WriteFile(basePath string, content []byte) error {
 	root := fullPath + basePath
 
 	return ioutil.WriteFile(root, content, 0600)
+}
 
+func GetTmpPath() string {
+	path := "/tmp/"
+
+	if os.Getenv("APP_ENV") == "testing" {
+		path += "/_tests/"
+	}
+
+	return path
 }
