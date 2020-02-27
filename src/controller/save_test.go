@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"wiki/src/test"
 )
@@ -37,7 +38,7 @@ func TestPostSave(t *testing.T) {
 		body := res.Body.String()
 		expected := "Title not found"
 
-		if body != expected {
+		if !strings.Contains(body, expected) {
 			t.Errorf(
 				"expected body `%s` is not equal to `%s`",
 				expected,
