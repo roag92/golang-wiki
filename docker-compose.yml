@@ -1,0 +1,7 @@
+version: '3.7'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: 'roag92/golang-wiki:compose'

@@ -1,2 +1,3 @@
 wiki
 tmp/*.txt
+docker-compose.override.yml

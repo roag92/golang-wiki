@@ -1,12 +1,12 @@
 {
 	"name": "Go",
-	"dockerFile": "Dockerfile",
 	"extensions": [
 		"ms-vscode.go"
 	],
-	"appPort": [
-        "8080:8080"
-	],
+	"dockerComposeFile": ["../docker-compose.yml", "docker-compose.extend.yml"],
+	"service": "app",
+	"workspaceFolder": "/golang-wiki",
+  	"shutdownAction": "stopCompose",
 	"settings": {
 		"go.useLanguageServer": true
 	},
