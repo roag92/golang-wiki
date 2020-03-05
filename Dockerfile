@@ -18,8 +18,10 @@ RUN GO111MODULE=on go get -v golang.org/x/tools/gopls@latest \
     github.com/ramya-rao-a/go-outline 2>&1
 RUN chmod +rx /go/pkg/ -R
 USER $USERNAME
+RUN sudo chown $USERNAME:$USERNAME /go/src/golang-wiki -R
 
 FROM base AS builder
+USER root
 RUN go mod download
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o /go/src/golang-wiki/bin/golang-wiki main.go
 
