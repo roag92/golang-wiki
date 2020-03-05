@@ -1,0 +1,10 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.13
+    working_directory: /go/src/golang-wiki
+    steps:
+      - checkout
+      - run: CGO_ENABLED=0 GOOS=linux go mod download
+      - run: go test -v ./...
