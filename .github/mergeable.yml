@@ -1,0 +1,15 @@
+version: 2
+mergeable:
+  - when: pull_request.*
+    pass:
+      - do: checks
+        status: success
+        payload:
+          title: The PR is ready to be merged.
+          summary: The pull request is ready to be merged.
+    fail:
+      - do: checks
+        status: failure
+        payload:
+          title: The PR is not ready to be merged.
+          summary: The pull request is not ready to be merged.
