@@ -13,7 +13,7 @@ type IndexController struct {
 
 // GetIndex function to list all posts (e.g. GET /)
 func (index IndexController) GetIndex(res http.ResponseWriter, req *http.Request) {
-	posts, err := utils.Search(utils.GetTmpPath(), ".txt", true, false)
+	posts, err := utils.Search(utils.GetTmpPath(), ".json", true, false)
 
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
