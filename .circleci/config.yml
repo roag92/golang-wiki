@@ -82,7 +82,7 @@ jobs:
       - run:
           name: Publish Docker Images
           command: |
-            echo "$DOCKERHUB_PASS" | $docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            echo "$DOCKERHUB_TOKEN" | $docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             $docker push $IMAGE_NAME:$DEV_TAG
             $docker push $IMAGE_NAME:$LATEST_TAG
 workflows:
@@ -94,6 +94,7 @@ workflows:
           requires:
             - build
       - publish:
+          context: DockerHub
           requires:
             - test
           filters:
