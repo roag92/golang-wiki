@@ -1,8 +1,17 @@
-version: 2
-jobs:
-  build:
+version: 2.1
+executors:
+  custom-executor:
     docker:
     - image: circleci/buildpack-deps:stretch
+    environment:
+    - IMAGE_NAME: roag92/golang-wiki
+    - BASE_TAG: base
+    - DEV_TAG: dev
+    - LATEST_TAG: latest
+
+jobs:
+  build:
+    executor: custom-executor
     steps:
     - checkout
     - setup_remote_docker
@@ -38,14 +47,8 @@ jobs:
         paths: 
          - dev.tar
          - latest.tar
-    environment:
-    - IMAGE_NAME: roag92/golang-wiki
-    - BASE_TAG: base
-    - DEV_TAG: dev
-    - LATEST_TAG: latest
   test:
-    docker:
-    - image: circleci/buildpack-deps:stretch
+    executor: custom-executor
     steps:
     - setup_remote_docker
     - run:
@@ -66,10 +69,7 @@ jobs:
         name: Run unit test
         command: |
           $docker run -it $IMAGE_NAME:$DEV_TAG sh -c 'go test ./...'
-    environment:
-    - IMAGE_NAME: roag92/golang-wiki
-    - DEV_TAG: dev
-    - LATEST_TAG: latest
+
 workflows:
   version: 2
 
