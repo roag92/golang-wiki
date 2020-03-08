@@ -68,15 +68,18 @@ jobs:
           name: Run Unit Test
           command: |
             $docker run -it $IMAGE_NAME:$DEV_TAG sh -c 'go test ./...'
-      - persist_to_workspace:
-          root: ~/tags
-          paths:
-            - dev.tar
-            - latest.tar
   publish:
     executor: custom-executor
     steps:
       - setup_remote_docker
+      - run:
+          name: Set Up Docker Command
+          command: |
+            if [[ $CIRCLE_SHELL_ENV == *"localbuild"* ]]; then
+                echo "export docker='sudo docker'" >> $BASH_ENV
+            else
+                echo "export docker='docker'" >> $BASH_ENV
+            fi
       - attach_workspace:
           at: ~/tags
       - run:
