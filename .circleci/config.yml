@@ -2,94 +2,91 @@ version: 2.1
 executors:
   custom-executor:
     docker:
-    - image: circleci/buildpack-deps:stretch
+      - image: 'circleci/buildpack-deps:stretch'
     environment:
-    - IMAGE_NAME: roag92/golang-wiki
-    - BASE_TAG: base
-    - DEV_TAG: dev
-    - LATEST_TAG: latest
-
+      - IMAGE_NAME: roag92/golang-wiki
+      - BASE_TAG: base
+      - DEV_TAG: dev
+      - LATEST_TAG: latest
 jobs:
   build:
     executor: custom-executor
     steps:
-    - checkout
-    - setup_remote_docker
-    - run:
-        name: Set Up Docker Command
-        command: |
-          if [[ $CIRCLE_SHELL_ENV == *"localbuild"* ]]; then
-              echo "export docker='sudo docker'" >> $BASH_ENV
-          else
-              echo "export docker='docker'" >> $BASH_ENV
-          fi
-    - run:
-        name: Build Images
-        command: |
-          $docker build -t $IMAGE_NAME:$BASE_TAG --target=$BASE_TAG .
-          $docker build \
-            --cache-from $IMAGE_NAME:$BASE_TAG \
-            -t $IMAGE_NAME:$DEV_TAG --target=$DEV_TAG .
-          $docker build \
-            --cache-from $IMAGE_NAME:$BASE_TAG \
-            --cache-from $IMAGE_NAME:$DEV_TAG \
-            -t $IMAGE_NAME:$LATEST_TAG .
-    - run:
-        name: Create Tags Directory
-        command: mkdir -p ~/tags
-    - run:
-        name: Archive Docker Images
-        command: |
-          $docker save -o ~/tags/$DEV_TAG.tar $IMAGE_NAME:$DEV_TAG
-          $docker save -o ~/tags/$LATEST_TAG.tar $IMAGE_NAME:$LATEST_TAG
-    - persist_to_workspace:
-        root: ~/tags
-        paths: 
-         - dev.tar
-         - latest.tar
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Set Up Docker Command
+          command: |
+            if [[ $CIRCLE_SHELL_ENV == *"localbuild"* ]]; then
+                echo "export docker='sudo docker'" >> $BASH_ENV
+            else
+                echo "export docker='docker'" >> $BASH_ENV
+            fi
+      - run:
+          name: Build Images
+          command: |
+            $docker build -t $IMAGE_NAME:$BASE_TAG --target=$BASE_TAG .
+            $docker build \
+              --cache-from $IMAGE_NAME:$BASE_TAG \
+              -t $IMAGE_NAME:$DEV_TAG --target=$DEV_TAG .
+            $docker build \
+              --cache-from $IMAGE_NAME:$BASE_TAG \
+              --cache-from $IMAGE_NAME:$DEV_TAG \
+              -t $IMAGE_NAME:$LATEST_TAG .
+      - run:
+          name: Create Tags Directory
+          command: mkdir -p ~/tags
+      - run:
+          name: Archive Docker Images
+          command: |
+            $docker save -o ~/tags/$DEV_TAG.tar $IMAGE_NAME:$DEV_TAG
+            $docker save -o ~/tags/$LATEST_TAG.tar $IMAGE_NAME:$LATEST_TAG
+      - persist_to_workspace:
+          root: ~/tags
+          paths:
+            - dev.tar
+            - latest.tar
   test:
     executor: custom-executor
     steps:
-    - setup_remote_docker
-    - run:
-        name: Set Up Docker Command
-        command: |
-          if [[ $CIRCLE_SHELL_ENV == *"localbuild"* ]]; then
-              echo "export docker='sudo docker'" >> $BASH_ENV
-          else
-              echo "export docker='docker'" >> $BASH_ENV
-          fi
-    - attach_workspace:
-        at: ~/tags
-    - run:
-        name: Load Archived Docker Dev Image
-        command: |
-          $docker load -i ~/tags/$DEV_TAG.tar
-    - run:
-        name: Run Unit Test
-        command: |
-          $docker run -it $IMAGE_NAME:$DEV_TAG sh -c 'go test ./...'
+      - setup_remote_docker
+      - run:
+          name: Set Up Docker Command
+          command: |
+            if [[ $CIRCLE_SHELL_ENV == *"localbuild"* ]]; then
+                echo "export docker='sudo docker'" >> $BASH_ENV
+            else
+                echo "export docker='docker'" >> $BASH_ENV
+            fi
+      - attach_workspace:
+          at: ~/tags
+      - run:
+          name: Load Archived Docker Dev Image
+          command: |
+            $docker load -i ~/tags/$DEV_TAG.tar
+      - run:
+          name: Run Unit Test
+          command: |
+            $docker run -it $IMAGE_NAME:$DEV_TAG sh -c 'go test ./...'
   publish:
     executor: custom-executor
     steps:
-    - setup_remote_docker
-    - attach_workspace:
-        at: ~/tags
-    - run:
-        name: Load Archived Docker Images
-        command: |
-          $docker load -i ~/tags/$DEV_TAG.tar
-          $docker load -i ~/tags/$LATEST_TAG.tar
-    - run:
-        name: Publish Docker Images
-        command: |
-          echo "$DOCKERHUB_PASS" | $docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-          $docker push $IMAGE_NAME:$DEV_TAG
-          $docker push $IMAGE_NAME:$LATEST_TAG
-
+      - setup_remote_docker
+      - attach_workspace:
+          at: ~/tags
+      - run:
+          name: Load Archived Docker Images
+          command: |
+            $docker load -i ~/tags/$DEV_TAG.tar
+            $docker load -i ~/tags/$LATEST_TAG.tar
+      - run:
+          name: Publish Docker Images
+          command: |
+            echo "$DOCKERHUB_PASS" | $docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            $docker push $IMAGE_NAME:$DEV_TAG
+            $docker push $IMAGE_NAME:$LATEST_TAG
 workflows:
   version: 2
-
   build_test_publish:
     jobs:
       - build
