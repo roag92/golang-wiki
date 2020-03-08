@@ -16,7 +16,7 @@ jobs:
     - checkout
     - setup_remote_docker
     - run:
-        name: Set up docker
+        name: Set Up Docker Command
         command: |
           if [[ $CIRCLE_SHELL_ENV == *"localbuild"* ]]; then
               echo "export docker='sudo docker'" >> $BASH_ENV
@@ -52,7 +52,7 @@ jobs:
     steps:
     - setup_remote_docker
     - run:
-        name: Set up docker
+        name: Set Up Docker Command
         command: |
           if [[ $CIRCLE_SHELL_ENV == *"localbuild"* ]]; then
               echo "export docker='sudo docker'" >> $BASH_ENV
@@ -62,20 +62,43 @@ jobs:
     - attach_workspace:
         at: ~/tags
     - run:
-        name: Load archived Docker image
+        name: Load Archived Docker Dev Image
         command: |
           $docker load -i ~/tags/$DEV_TAG.tar
     - run:
-        name: Run unit test
+        name: Run Unit Test
         command: |
           $docker run -it $IMAGE_NAME:$DEV_TAG sh -c 'go test ./...'
+  publish:
+    executor: custom-executor
+    steps:
+    - setup_remote_docker
+    - attach_workspace:
+      at: ~/tags
+    - run:
+        name: Load Archived Docker Images
+        command: |
+          $docker load -i ~/tags/$DEV_TAG.tar
+          $docker load -i ~/tags/$LATEST_TAG.tar
+    - run:
+        name: Publish Docker Images
+        command: |
+          echo "$DOCKERHUB_PASS" | $docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+          $docker push $IMAGE_NAME:$DEV_TAG
+          $docker push $IMAGE_NAME:$LATEST_TAG
 
 workflows:
   version: 2
 
-  build_and_test:
+  build_test_publish:
     jobs:
       - build
       - test:
           requires:
             - build
+      - publish:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
