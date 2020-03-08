@@ -68,6 +68,11 @@ jobs:
           name: Run Unit Test
           command: |
             $docker run -it $IMAGE_NAME:$DEV_TAG sh -c 'go test ./...'
+      - persist_to_workspace:
+          root: ~/tags
+          paths:
+            - dev.tar
+            - latest.tar
   publish:
     executor: custom-executor
     steps:
