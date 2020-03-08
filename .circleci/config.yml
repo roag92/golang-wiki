@@ -74,7 +74,7 @@ jobs:
     steps:
     - setup_remote_docker
     - attach_workspace:
-      at: ~/tags
+        at: ~/tags
     - run:
         name: Load Archived Docker Images
         command: |
