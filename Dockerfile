@@ -17,8 +17,8 @@ RUN apk add -q --update --progress --no-cache git sudo bash curl
 RUN GO111MODULE=on go get -v golang.org/x/tools/gopls@latest \
     github.com/ramya-rao-a/go-outline 2>&1
 RUN chmod +rx /go/pkg/ -R
+RUN chown $USERNAME:$USERNAME /go/src/golang-wiki -R
 USER $USERNAME
-RUN sudo chown $USERNAME:$USERNAME /go/src/golang-wiki -R
 
 FROM base AS builder
 USER root
@@ -27,6 +27,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o /go
 
 FROM scratch
 COPY --from=builder /go/src/golang-wiki/bin/golang-wiki /usr/local/golang-wiki/bin/golang-wiki
-WORKDIR /usr/local/golang-wiki
-COPY .env templates tmp/.gitkeep ./
+WORKDIR /go/src/golang-wiki
+COPY templates /go/src/golang-wiki/templates
+COPY tmp /go/src/golang-wiki/tmp
 ENTRYPOINT ["/usr/local/golang-wiki/bin/golang-wiki"]

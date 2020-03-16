@@ -1,0 +1,11 @@
+version: '3.7'
+services:
+  app:
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./tmp:/go/src/golang-wiki/tmp
+      - ./.env:/go/src/golang-wiki/.env
+    environment: 
+      - APP_ENV=${APP_ENV}
+    container_name: app
